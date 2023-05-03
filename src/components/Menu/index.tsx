@@ -9,13 +9,10 @@ interface MenuProps {
   active: RoutePath;
   navItems: NavItem[];
   onNavigate: (data: RoutePath) => void;
+  onLogout: () => void;
 }
 
-const Menu = ({ active, navItems, onNavigate }: MenuProps) => {
-  const navigate = useNavigate();
-  const handleNavigate = () => {
-    navigate(RoutePath.LOGIN);
-  };
+const Menu = ({ active, navItems, onNavigate, onLogout }: MenuProps) => {
   return (
     <S.Menu>
       <nav>
@@ -34,7 +31,7 @@ const Menu = ({ active, navItems, onNavigate }: MenuProps) => {
           </S.MenuItem>
         ))}
       </nav>
-      <S.MenuItemLogout onClick={handleNavigate}>
+      <S.MenuItemLogout onClick={onLogout}>
         <Logout />
       </S.MenuItemLogout>
     </S.Menu>

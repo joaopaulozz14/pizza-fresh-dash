@@ -10,12 +10,18 @@ import { RoutePath } from "../../types/routes";
 import { navigationItems } from "../../data/navigation";
 import { DateTime } from "luxon";
 import { useNavigate } from "react-router-dom";
-import { ProductResponse } from "../../types/Product";
-import { products } from "../../mocks/products";
+import { ProductResponse } from "../../types/api/product";
+//import { products } from "../../mocks/products";
 //import { orders } from "../../mocks/orders";
 import { OrderType } from "../../types/OrderType";
 import { OrderItemType } from "../../types/OrderItemType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { QueryKey } from "../../types/QueryKey";
+import { ProductService } from "../../services/ProductService";
+import { TableService } from "../../services/TableService";
+import { Auth } from "../../helpers/Auth";
+import { matchByText } from "../../helpers/Utils";
 
 const Home = () => {
   const dateDescription = DateTime.now().toLocaleString({
@@ -25,6 +31,19 @@ const Home = () => {
 
   const navigate = useNavigate();
 
+  const { data: productsData } = useQuery(
+    [QueryKey.PRODUCTS],
+    ProductService.getLista
+  );
+
+  const { data: tablesData } = useQuery(
+    [QueryKey.TABLES],
+    TableService.getLista
+  );
+
+  const [products, setProducts] = useState<ProductResponse[]>([]);
+  const tables = tablesData || [];
+
   const [activeOrderType, setActiveOrderType] = useState(
     OrderType.COMER_NO_LOCAL
   );
@@ -32,6 +51,10 @@ const Home = () => {
   const [orders, setOrders] = useState<OrderItemType[]>([]);
   const [proceedToPayment, setProceedToPayment] = useState<boolean>(false);
   const [selectedTable, setSelectedTable] = useState<number | undefined>();
+  const [filteredProducts, setFilteredProducts] = useState<ProductResponse[]>(
+    []
+  );
+
   const handleNavigation = (path: RoutePath) => navigate(path);
   const handleSelection = (product: ProductResponse) => {
     const existing = orders.find((i) => i.product.id === product.id);
@@ -43,17 +66,30 @@ const Home = () => {
       : [...orders, item];
     setOrders(list);
   };
+
+  const handleFilter = (title: string) => {
+    const list = products.filter(({ name }) => matchByText(name, title));
+    setFilteredProducts(list);
+  };
+
   const handleRemoveOrderItem = (id: string) => {
     const filtered = orders.filter((i) => i.product.id != id);
     setOrders(filtered);
   };
-  console.log(orders);
+  //console.log(orders);
+
+  useEffect(() => {
+    setProducts(productsData || []);
+    setFilteredProducts(productsData || [])
+  }, [productsData]);
+
   return (
     <S.Home>
       <Menu
         active={RoutePath.HOME}
         navItems={navigationItems}
         onNavigate={handleNavigation}
+        onLogout={Auth.logout}
       />
       <S.HomeContent>
         <header>
@@ -66,7 +102,11 @@ const Home = () => {
             </div>
             <S.HomeHeaderDetailsSearch>
               <Search />
-              <input type="text" placeholder="Procure pelo sabor" />
+              <input
+                type="text"
+                placeholder="Procure pelo sabor"
+                onChange={({ target }) => handleFilter(target.value)}
+              />
             </S.HomeHeaderDetailsSearch>
           </S.HomeHeaderDetails>
         </header>
@@ -75,9 +115,9 @@ const Home = () => {
             <b>Pizzas</b>
           </S.HomeProductTitle>
           <S.HomeProductList>
-            <ProductItemList onSelectTable={setSelectedTable}>
+            <ProductItemList tables={tables} onSelectTable={setSelectedTable}>
               {Boolean(products.length) &&
-                products.map((product, index) => (
+                filteredProducts.map((product, index) => (
                   <ProductItem
                     product={product}
                     key={`ProductItem-${index}`}
@@ -119,3 +159,4 @@ const Home = () => {
 };
 
 export default Home;
+

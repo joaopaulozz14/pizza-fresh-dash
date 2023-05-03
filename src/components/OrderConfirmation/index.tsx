@@ -44,7 +44,7 @@ const OrderConfirmation = ({
             onRemoveItem={() => onRemoveItem(item.product.id)}
             onItemChange={handleChange}
             product={item.product}
-            observation={item.observation}
+            description={item.description}
             quantity={item.quantity}
             key={`OrderConfirmation-${index}`}
           />

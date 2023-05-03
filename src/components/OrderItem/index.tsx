@@ -1,8 +1,8 @@
 import * as S from "./styles";
 import { Trash } from "../../assets/icons";
-import { ProductResponse } from "../../types/Product";
+import { ProductResponse } from "../../types/api/product";
 import { ButtonHTMLAttributes, useEffect, useState } from "react";
-import { OrderType } from "../../types/OrderType";
+//import { OrderType } from "../../types/OrderType";
 import { OrderItemType } from "../../types/OrderItemType";
 
 type DivType = ButtonHTMLAttributes<HTMLDivElement>;
@@ -10,7 +10,7 @@ type DivType = ButtonHTMLAttributes<HTMLDivElement>;
 export type OrderItemProps = {
   product: ProductResponse;
   quantity: number;
-  observation?: string;
+  description?: string;
   canDelete?: Boolean;
   onRemoveItem?: () => void;
   onItemChange: (item: OrderItemType) => void;
@@ -19,14 +19,14 @@ export type OrderItemProps = {
 const OrderItem = ({
   product,
   quantity,
-  observation = "",
+  description = "",
   onRemoveItem,
   onItemChange,
   canDelete = true,
   ...props
 }: OrderItemProps) => {
   const [quantityState, setQuantityState] = useState(quantity);
-  const [observationState, setObservationState] = useState(observation);
+  const [observationState, setObservationState] = useState(description);
 
   const handleObservation = (data: string) => {
     setObservationState(data);
@@ -40,13 +40,13 @@ const OrderItem = ({
     onItemChange({
       product: product,
       quantity: quantityParam,
-      observation: observationParam,
+      description: observationParam,
     });
   };
 
   useEffect(() => {
-    handleObservation(observation);
-  }, [observation]);
+    handleObservation(description);
+  }, [description]);
 
   useEffect(() => {
     handleQuantity(quantity);

@@ -85,7 +85,7 @@ const OrderDetails = ({
                 <OrderItem
                   product={item.product}
                   quantity={item.quantity}
-                  observation={item.observation}
+                  description={item.description}
                   onRemoveItem={() => onRemoveItem(item.product.id)}
                   onItemChange={handleChange}
                   key={`OrderDetails${index}`}
