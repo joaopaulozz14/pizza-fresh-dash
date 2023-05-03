@@ -3,7 +3,6 @@ import logo from "../../assets/logo-patterns/logo.png";
 import { Logout } from "../../assets/icons";
 import { RoutePath } from "../../types/routes";
 import { NavItem } from "./types";
-import { useNavigate } from "react-router-dom";
 
 interface MenuProps {
   active: RoutePath;
@@ -17,7 +16,7 @@ const Menu = ({ active, navItems, onNavigate, onLogout }: MenuProps) => {
     <S.Menu>
       <nav>
         <S.MenuLogo>
-          <img src={logo} alt="" />
+          <img src={logo} alt="Logo Pizza Fresh" />
         </S.MenuLogo>
 
         {navItems.map((item, index) => (
